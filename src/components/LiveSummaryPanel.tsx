@@ -41,8 +41,8 @@ export function LiveSummaryPanel({ onCalculate }: { onCalculate: () => void }) {
         )}
         <Row label="ราคาเฉลี่ย/ตร.ม." value={c.gfa > 0 ? formatRatePerSqm(c.costPerSqm) : "-"} />
         <Row
-          label="ค่าจ้างสถาปนิกแนะนำ"
-          value={`${formatBahtCompact(architectFee.low)} – ${formatBahtCompact(architectFee.high)}`}
+          label={`ค่าออกแบบสถาปนิก (${architectFee.effectivePercent.toFixed(2)}%${architectFee.isOverridden ? " · กำหนดเอง" : " · สมาคมฯ"})`}
+          value={formatBahtCompact(architectFee.fee)}
         />
         <Row
           label="เวลาก่อสร้างคร่าว ๆ"

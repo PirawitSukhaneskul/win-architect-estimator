@@ -1524,6 +1524,8 @@ input[type="range"] {
   background: rgba(120, 130, 170, 0.1);
   padding: 10px;
   border-radius: 8px;
+  white-space: pre-line;
+  line-height: 1.7;
 }
 
 /* ---------- History ---------- */

@@ -1,11 +1,25 @@
 import type { EstimateState } from "../types";
 import type { EstimateComputation } from "./calc";
+import {
+  BUILDING_FEE_CATEGORY,
+  computeAsaFee,
+  feeCategoriesById,
+  type FeeCategoryId,
+} from "../data/architectFeeRates";
 
 export interface ArchitectFeeEstimate {
-  low: number;
-  high: number;
-  percentLow: number;
-  percentHigh: number;
+  categoryId: FeeCategoryId;
+  categoryLabel: string;
+  constructionCost: number;
+  /** Fee computed from the ASA tiered schedule. */
+  asaFee: number;
+  asaEffectivePercent: number;
+  /** User-entered percent override, or null when using the ASA schedule. */
+  overridePercent: number | null;
+  isOverridden: boolean;
+  /** Final fee shown to the user (override if set, else ASA). */
+  fee: number;
+  effectivePercent: number;
   note: string;
 }
 
@@ -14,23 +28,6 @@ export interface DurationEstimate {
   highDays: number;
   note: string;
 }
-
-const FEE_BY_BUILDING: Record<string, [number, number]> = {
-  house: [0.06, 0.1],
-  airbnb: [0.06, 0.1],
-  "resort-villa": [0.06, 0.1],
-  cafe: [0.07, 0.12],
-  restaurant: [0.07, 0.12],
-  clinic: [0.07, 0.12],
-  hotel: [0.06, 0.1],
-  apartment: [0.06, 0.1],
-  warehouse: [0.03, 0.06],
-  parking: [0.03, 0.06],
-  "small-office": [0.05, 0.09],
-  "commercial-shop": [0.05, 0.09],
-  sports: [0.06, 0.1],
-  other: [0.05, 0.1],
-};
 
 const BASE_DURATION_BY_BUILDING: Record<string, [number, number, number]> = {
   house: [180, 360, 220],
@@ -53,27 +50,32 @@ export function estimateArchitectFee(
   state: EstimateState,
   computation: EstimateComputation,
 ): ArchitectFeeEstimate {
-  const base = FEE_BY_BUILDING[state.info.buildingTypeId] ?? FEE_BY_BUILDING.other;
-  const renovationAdd =
-    state.info.mode === "renovation"
-      ? state.info.renovationComplexity === "heavy"
-        ? 0.03
-        : state.info.renovationComplexity === "medium"
-          ? 0.02
-          : 0.01
-      : 0;
-  const percentLow = base[0] + renovationAdd;
-  const percentHigh = base[1] + renovationAdd;
-  const minFeePerSqm = state.info.mode === "renovation" ? 550 : 400;
-  const targetFeePerSqm = state.info.mode === "renovation" ? 950 : 750;
+  const categoryId = BUILDING_FEE_CATEGORY[state.info.buildingTypeId] ?? "commercial";
+  const category = feeCategoriesById[categoryId];
+  const cost = computation.grandTotal;
+
+  const asaFee = computeAsaFee(cost, category);
+  const asaEffectivePercent = cost > 0 ? (asaFee / cost) * 100 : 0;
+
+  const override = state.info.architectFeePercentOverride;
+  const isOverridden = override != null && override > 0;
+  const fee = isOverridden ? cost * (override / 100) : asaFee;
+  const effectivePercent = isOverridden
+    ? override
+    : asaEffectivePercent;
 
   return {
-    low: Math.max(computation.grandTotal * percentLow, computation.gfa * minFeePerSqm),
-    high: Math.max(computation.grandTotal * percentHigh, computation.gfa * targetFeePerSqm),
-    percentLow,
-    percentHigh,
+    categoryId,
+    categoryLabel: category.labelTh,
+    constructionCost: cost,
+    asaFee,
+    asaEffectivePercent,
+    overridePercent: override ?? null,
+    isOverridden,
+    fee,
+    effectivePercent,
     note:
-      "ค่าจ้างสถาปนิกเป็นช่วงแนะนำเบื้องต้น ไม่ใช่อัตราบังคับหรือใบเสนอราคา ราคาจริงขึ้นอยู่กับขอบเขตงาน ความซับซ้อน รายละเอียดแบบ และการประสานงานวิศวกร",
+      "อัตราค่าออกแบบอ้างอิงจากสมาคมสถาปนิกสยาม ในพระบรมราชูปถัมภ์ คำนวณแบบขั้นบันไดตามช่วงมูลค่าก่อสร้าง สามารถแก้ไขเปอร์เซ็นต์ได้ตามการตกลงจริงและขอบเขตงาน",
   };
 }
 

@@ -96,6 +96,8 @@ export interface ProjectInfo {
   hasDemolition: boolean;
   demolitionPercent: number; // 0..20
   renovationComplexity: RenovationComplexity;
+  /** User override for architect design-fee percent; null = use ASA schedule. */
+  architectFeePercentOverride: number | null;
 }
 
 export interface EstimateState {

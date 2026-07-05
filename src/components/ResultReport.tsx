@@ -58,11 +58,13 @@ export function ResultReport({ onNavigate }: { onNavigate: (v: View) => void }) 
 
         <section className="report-block planning-grid">
           <GlassCard className="planning-card">
-            <span className="planning-label">ช่วงค่าจ้างสถาปนิกที่แนะนำ</span>
-            <strong>{formatBaht(model.architectFee.low)} – {formatBaht(model.architectFee.high)}</strong>
+            <span className="planning-label">ค่าออกแบบสถาปนิก (สมาคมสถาปนิกสยามฯ)</span>
+            <strong>{formatBaht(model.architectFee.fee)}</strong>
             <p>
-              ประมาณ {Math.round(model.architectFee.percentLow * 100)}–
-              {Math.round(model.architectFee.percentHigh * 100)}% ของงบก่อสร้าง
+              {model.architectFee.effectivePercent.toFixed(2)}% ของงบก่อสร้าง
+              {model.architectFee.isOverridden
+                ? " (กำหนดเอง)"
+                : ` · อัตราสมาคมฯ ${model.architectFee.categoryLabel}`}
             </p>
           </GlassCard>
           <GlassCard className="planning-card">

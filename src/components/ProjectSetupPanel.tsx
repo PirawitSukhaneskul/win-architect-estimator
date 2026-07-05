@@ -3,11 +3,14 @@ import { useStore } from "../state/store";
 import { GlassCard, Field, SegmentedControl, IconButton } from "./primitives";
 import { BuildingPresetPicker } from "./BuildingPresetPicker";
 import { RENOVATION_HELPER } from "../data/disclaimers";
+import { computeEstimate } from "../lib/calc";
+import { estimateArchitectFee } from "../lib/planning";
 import type { ProjectMode, QualityLevel, RenovationComplexity } from "../types";
 
 export function ProjectSetupPanel() {
   const { state, patchInfo, applyGlobalQuality, setBuildingType } = useStore();
   const { info } = state;
+  const fee = estimateArchitectFee(state, computeEstimate(state));
 
   return (
     <GlassCard className="setup-panel" strong>
@@ -82,6 +85,30 @@ export function ProjectSetupPanel() {
               { value: "mid", label: "ปานกลาง" },
               { value: "high", label: "ราคาสูง" },
             ]}
+          />
+        </Field>
+
+        <Field
+          label="ค่าออกแบบสถาปนิก (%)"
+          hint={`เว้นว่าง = ใช้อัตราสมาคมฯ อัตโนมัติ ${fee.asaEffectivePercent.toFixed(2)}% · ${fee.categoryLabel}`}
+        >
+          <input
+            type="number"
+            min={0}
+            max={30}
+            step={0.25}
+            inputMode="decimal"
+            placeholder={`อัตโนมัติ ${fee.asaEffectivePercent.toFixed(2)}%`}
+            value={info.architectFeePercentOverride ?? ""}
+            aria-label="เปอร์เซ็นต์ค่าออกแบบสถาปนิก (แก้ไขได้)"
+            onChange={(e) => {
+              const raw = e.target.value.trim();
+              const n = Number(raw);
+              patchInfo({
+                architectFeePercentOverride:
+                  raw === "" || Number.isNaN(n) ? null : Math.max(0, n),
+              });
+            }}
           />
         </Field>
       </div>

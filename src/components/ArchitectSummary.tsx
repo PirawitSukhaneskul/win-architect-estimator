@@ -16,8 +16,8 @@ export function ArchitectSummary({ model }: { model: ReportModel }) {
         <Meta label="คุณภาพงานหลัก" value={model.qualityLabel} />
         <Meta label="ราคาเฉลี่ย/ตร.ม." value={c.gfa > 0 ? formatRatePerSqm(c.costPerSqm) : "-"} />
         <Meta
-          label="ค่าจ้างสถาปนิกแนะนำ"
-          value={`${formatBaht(model.architectFee.low)} – ${formatBaht(model.architectFee.high)}`}
+          label={`ค่าออกแบบสถาปนิก (${model.architectFee.effectivePercent.toFixed(2)}%)`}
+          value={formatBaht(model.architectFee.fee)}
         />
         <Meta
           label="เวลาก่อสร้างคร่าว ๆ"

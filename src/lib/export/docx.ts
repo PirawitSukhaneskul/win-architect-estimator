@@ -174,7 +174,7 @@ export async function exportToDocx(model: ReportModel, filenameBase: string): Pr
           para(`ช่วงราคาประเมิน (ต่ำ–สูง): ${formatBaht(c.grandTotalLow)} – ${formatBaht(c.grandTotalHigh)}`),
           para(`ราคาเฉลี่ยต่อตารางเมตร: ${c.gfa > 0 ? formatRatePerSqm(c.costPerSqm) : "-"}`),
           para(
-            `ช่วงค่าจ้างสถาปนิกที่แนะนำ: ${formatBaht(model.architectFee.low)} – ${formatBaht(model.architectFee.high)}`,
+            `ค่าออกแบบสถาปนิก (สมาคมสถาปนิกสยามฯ): ${formatBaht(model.architectFee.fee)} (${model.architectFee.effectivePercent.toFixed(2)}% ของงบก่อสร้าง${model.architectFee.isOverridden ? " · กำหนดเอง" : ""})`,
           ),
           para(`ระยะเวลาก่อสร้างโดยประมาณ: ${model.duration.lowDays}–${model.duration.highDays} วัน`),
 

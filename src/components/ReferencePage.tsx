@@ -23,9 +23,18 @@ import {
   scopeExcluded,
   scopeIncluded,
 } from "../data/reference";
+import {
+  BUILDING_FEE_CATEGORY,
+  FEE_BAND_LABELS,
+  FEE_SOURCE_NAME,
+  FEE_SOURCE_URL,
+  disciplineSplit,
+  feeCategories,
+  feeCategoriesById,
+} from "../data/architectFeeRates";
 import { formatNumber } from "../lib/format";
 
-type Tab = "quality" | "database" | "scope" | "method";
+type Tab = "quality" | "database" | "fee" | "scope" | "method";
 
 export function ReferencePage() {
   const [tab, setTab] = useState<Tab>("quality");
@@ -43,6 +52,7 @@ export function ReferencePage() {
         options={[
           { value: "quality", label: "นิยามคุณภาพ" },
           { value: "database", label: "ฐานข้อมูลราคา" },
+          { value: "fee", label: "ค่าออกแบบ" },
           { value: "scope", label: "รวม / ไม่รวม" },
           { value: "method", label: "วิธีคำนวณ" },
         ]}
@@ -51,6 +61,7 @@ export function ReferencePage() {
       <div className="reference-body">
         {tab === "quality" && <QualityTab />}
         {tab === "database" && <DatabaseTab />}
+        {tab === "fee" && <FeeTab />}
         {tab === "scope" && <ScopeTab />}
         {tab === "method" && <MethodTab />}
       </div>
@@ -263,6 +274,119 @@ function ScopeTab() {
           ))}
         </ul>
       </GlassCard>
+    </div>
+  );
+}
+
+function FeeTab() {
+  return (
+    <div className="ref-stack">
+      <p className="ref-note">
+        อัตราค่าบริการออกแบบอ้างอิงจาก {FEE_SOURCE_NAME} คิดแบบ “ขั้นบันได” ตามช่วงมูลค่าก่อสร้าง
+        (แต่ละช่วงคิดในอัตราของช่วงนั้น) แอปคำนวณให้อัตโนมัติตามประเภทอาคาร และปรับเปอร์เซ็นต์เองได้ในหน้าประเมิน
+      </p>
+
+      <GlassCard className="ref-table-card">
+        <div className="ref-table-wrap">
+          <table className="ref-table">
+            <thead>
+              <tr>
+                <th>ประเภทโครงการ</th>
+                {FEE_BAND_LABELS.map((b) => (
+                  <th key={b} className="num">
+                    {b}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {feeCategories.map((cat) => (
+                <tr key={cat.id}>
+                  <th scope="row">{cat.labelTh}</th>
+                  {cat.bands.map((band, i) => (
+                    <td key={i} className="num">
+                      {band.rate.toFixed(2)}%
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+
+      <GlassCard className="formula-card">
+        <h3>วิธีคำนวณค่าออกแบบ (ขั้นบันได)</h3>
+        <code>
+          ตัวอย่าง บ้าน มูลค่าก่อสร้าง 15 ล้าน{"\n"}
+          10 ล้านแรก × 7.50% = 750,000 บาท{"\n"}
+          5 ล้านถัดมา × 6.00% = 300,000 บาท{"\n"}
+          รวมค่าออกแบบ = 1,050,000 บาท (เฉลี่ย 7.00%)
+        </code>
+      </GlassCard>
+
+      <GlassCard className="ref-table-card">
+        <div className="ref-table-wrap">
+          <table className="ref-table">
+            <thead>
+              <tr>
+                <th>ประเภทอาคารในแอป</th>
+                <th>หมวดค่าออกแบบที่ใช้</th>
+              </tr>
+            </thead>
+            <tbody>
+              {buildingPresets.map((p) => (
+                <tr key={p.id}>
+                  <th scope="row">{p.labelTh}</th>
+                  <td>{feeCategoriesById[BUILDING_FEE_CATEGORY[p.id] ?? "commercial"].labelTh}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+
+      <h3 className="subsection-title">สัดส่วนงานออกแบบระหว่างสถาปนิกและวิศวกร</h3>
+      <GlassCard className="ref-table-card">
+        <div className="ref-table-wrap">
+          <table className="ref-table">
+            <thead>
+              <tr>
+                <th>สาขา</th>
+                {disciplineSplit.typeLabels.map((_t, i) => (
+                  <th key={i} className="num">
+                    ประเภท {i + 1}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {disciplineSplit.rows.map((row) => (
+                <tr key={row.label}>
+                  <th scope="row">{row.label}</th>
+                  {row.values.map((v, i) => (
+                    <td key={i} className="num">
+                      {v == null ? "-" : `${v}%`}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </GlassCard>
+      <p className="ref-note">
+        ประเภท 1 = บ้าน · ประเภท 2 = อาคารชุด/สำนักงาน/ห้าง/หอพัก/โรงเรียน · ประเภท 3 = โรงแรม/โรงพยาบาล/โรงงาน/สนามกีฬาในร่ม ·
+        ประเภท 4 = โรงงาน/โกดัง/อาคารจอดรถ/ห้องแถว/ตลาด
+      </p>
+
+      <p className="ref-note">
+        ที่มา:{" "}
+        <a href={FEE_SOURCE_URL} target="_blank" rel="noreferrer">
+          {FEE_SOURCE_NAME}
+        </a>{" "}
+        · อัตรานี้เป็นแนวทางมาตรฐาน ค่าบริการจริงอาจต่างตามขอบเขตงานและการตกลง
+      </p>
     </div>
   );
 }

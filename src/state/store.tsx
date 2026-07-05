@@ -36,6 +36,7 @@ function defaultInfo(): ProjectInfo {
     hasDemolition: false,
     demolitionPercent: 8,
     renovationComplexity: "medium",
+    architectFeePercentOverride: null,
   };
 }
 
