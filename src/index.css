@@ -87,7 +87,8 @@ textarea {
 /* ---------- Buttons ---------- */
 .btn-primary,
 .btn-outline,
-.btn-ghost {
+.btn-ghost,
+.btn-mustard {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -98,6 +99,17 @@ textarea {
   border: 1px solid transparent;
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
   white-space: nowrap;
+}
+
+/* Mustard feedback button */
+.btn-mustard {
+  color: #fff;
+  background: #c8921f;
+  box-shadow: 0 8px 18px rgba(200, 146, 31, 0.28);
+}
+.btn-mustard:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #b17e15;
 }
 .btn-primary {
   color: #fff;

@@ -79,7 +79,7 @@ export function FeedbackButton({ compact = false }: { compact?: boolean }) {
     <>
       <button
         type="button"
-        className={compact ? "btn-ghost btn-block" : "btn-outline"}
+        className={compact ? "btn-mustard btn-block" : "btn-mustard"}
         onClick={() => setOpen(true)}
       >
         <MessageSquare size={16} /> แนบความคิดเห็น
