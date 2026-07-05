@@ -2,6 +2,13 @@ export const BRAND = "WIN ARCHITECT";
 export const FB_CREDIT = "FB PAGE: WIN ARCHITECT";
 export const SOURCE_BADGE = "ฐานข้อมูลราคา พ.ศ. 2568-2569";
 
+// Contact / social links (shown in the app footer).
+export const FB_PAGE_URL = "https://www.facebook.com/WinArchitect";
+export const PORTFOLIO_URL =
+  "https://pirawitsukhaneskul.github.io/Pirawit-Portfolio/?utm_source=estimator&utm_medium=app&utm_content=footer";
+export const LINKEDIN_URL = "https://www.linkedin.com/in/pirawitsuk/";
+export const CONTACT_EMAIL = "pirawit.win@gmail.com";
+
 export const SOURCE_NAME =
   "บัญชีราคามาตรฐานต่อหน่วย โรงเรือนสิ่งปลูกสร้าง สมาคมประเมินค่าทรัพย์สินแห่งประเทศไทย พ.ศ. 2568-2569";
 export const SOURCE_URL = "https://www.thaiappraisal.org/thai/value/value.php";
