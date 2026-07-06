@@ -8,6 +8,7 @@ import { RoomEstimateTable } from "./RoomEstimateTable";
 import { LiveSummaryPanel } from "./LiveSummaryPanel";
 import { SpatialBlockPreview } from "./SpatialBlockPreview";
 import { FeedbackButton } from "./FeedbackButton";
+import { MobileSummaryBar } from "./MobileSummaryBar";
 import { BRAND } from "../data/disclaimers";
 
 export function EstimatorPage({
@@ -64,6 +65,8 @@ export function EstimatorPage({
           </div>
         </aside>
       </div>
+
+      <MobileSummaryBar onCalculate={onCalculate} />
     </div>
   );
 }

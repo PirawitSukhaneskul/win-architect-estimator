@@ -33,6 +33,10 @@ export function rateForQuality(item: RateItem, quality: QualityLevel): number {
   const b = resolveBounds(item);
   if (quality === "low") return b.low;
   if (quality === "high") return b.high;
+  if (quality === "premium") {
+    // Above the source "high": ~40% of the way toward the premium ceiling.
+    return Math.round(b.high + (b.premiumMax - b.high) * 0.4);
+  }
   return b.mid;
 }
 

@@ -11,7 +11,10 @@ import { buildingPresetsById } from "../data/buildingPresets";
 import { categoryMeta } from "../data/categories";
 
 export function qualityLabelTh(q: QualityLevel): string {
-  return q === "low" ? "ราคาต่ำ" : q === "high" ? "ราคาสูง" : "ราคาปานกลาง";
+  if (q === "low") return "ราคาต่ำ";
+  if (q === "high") return "ราคาสูง";
+  if (q === "premium") return "พรีเมียม";
+  return "ราคาปานกลาง";
 }
 
 export interface ReportRow {

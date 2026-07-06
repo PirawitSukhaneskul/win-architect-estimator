@@ -8,6 +8,14 @@ import { categoryMeta, categoryOrder } from "../data/categories";
 import { formatArea, formatBaht } from "../lib/format";
 import { NumberInput, SegmentedControl, IconButton } from "./primitives";
 import { PriceRangeSlider } from "./PriceRangeSlider";
+import { useIsMobile } from "../lib/useIsMobile";
+
+const QUALITY_OPTIONS: { value: QualityLevel; label: string }[] = [
+  { value: "low", label: "ราคาต่ำ" },
+  { value: "mid", label: "ปานกลาง" },
+  { value: "high", label: "ราคาสูง" },
+  { value: "premium", label: "พรีเมียม / พิเศษ" },
+];
 
 export function RoomEstimateRow({
   room,
@@ -19,6 +27,7 @@ export function RoomEstimateRow({
   floors: number;
 }) {
   const { updateRoom, duplicateRoom, removeRoom } = useStore();
+  const isMobile = useIsMobile();
   const comp = computeRoom(room);
   const rateItem = rateItemsById[room.rateItemId];
 
@@ -78,13 +87,27 @@ export function RoomEstimateRow({
 
         <label className="mini-field">
           <span>จำนวน</span>
-          <NumberInput
-            value={room.quantity}
-            min={1}
-            ariaLabel="จำนวนห้อง"
-            invalid={qtyInvalid}
-            onChange={(v) => updateRoom(room.id, { quantity: v })}
-          />
+          {isMobile ? (
+            <select
+              value={room.quantity}
+              aria-label="จำนวนห้อง"
+              onChange={(e) => updateRoom(room.id, { quantity: Number(e.target.value) })}
+            >
+              {Array.from({ length: 50 }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>
+                  {n} ห้อง
+                </option>
+              ))}
+            </select>
+          ) : (
+            <NumberInput
+              value={room.quantity}
+              min={1}
+              ariaLabel="จำนวนห้อง"
+              invalid={qtyInvalid}
+              onChange={(v) => updateRoom(room.id, { quantity: v })}
+            />
+          )}
         </label>
 
         <label className="mini-field">
@@ -108,17 +131,38 @@ export function RoomEstimateRow({
 
       <div className="room-quality">
         <span className="mini-label">คุณภาพ</span>
-        <SegmentedControl<QualityLevel>
-          size="sm"
-          ariaLabel="คุณภาพงานของห้อง"
-          value={room.qualityLabel}
-          onChange={(v) => updateRoom(room.id, { qualityLabel: v, manualRate: false })}
-          options={[
-            { value: "low", label: "ต่ำ" },
-            { value: "mid", label: "กลาง" },
-            { value: "high", label: "สูง" },
-          ]}
-        />
+        {isMobile ? (
+          <select
+            className="quality-select"
+            value={room.qualityLabel}
+            aria-label="คุณภาพงานของห้อง"
+            onChange={(e) =>
+              updateRoom(room.id, {
+                qualityLabel: e.target.value as QualityLevel,
+                manualRate: false,
+              })
+            }
+          >
+            {QUALITY_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <SegmentedControl<QualityLevel>
+            size="sm"
+            ariaLabel="คุณภาพงานของห้อง"
+            value={room.qualityLabel}
+            onChange={(v) => updateRoom(room.id, { qualityLabel: v, manualRate: false })}
+            options={[
+              { value: "low", label: "ต่ำ" },
+              { value: "mid", label: "กลาง" },
+              { value: "high", label: "สูง" },
+              { value: "premium", label: "พิเศษ" },
+            ]}
+          />
+        )}
       </div>
 
       <label className="rate-map-field">

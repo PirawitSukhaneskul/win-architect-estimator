@@ -1,6 +1,6 @@
 // Core domain types for the WIN ARCHITECT construction cost estimator.
 
-export type QualityLevel = "low" | "mid" | "high";
+export type QualityLevel = "low" | "mid" | "high" | "premium";
 export type ProjectMode = "new_build" | "renovation";
 export type RenovationComplexity = "light" | "medium" | "heavy";
 export type MarketBand = "source_low" | "source_mid" | "source_high" | "premium" | "custom";

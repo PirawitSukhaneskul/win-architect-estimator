@@ -81,9 +81,10 @@ export function ProjectSetupPanel() {
             value={info.defaultQuality}
             onChange={(v) => applyGlobalQuality(v)}
             options={[
-              { value: "low", label: "ราคาต่ำ" },
-              { value: "mid", label: "ปานกลาง" },
-              { value: "high", label: "ราคาสูง" },
+              { value: "low", label: "ต่ำ" },
+              { value: "mid", label: "กลาง" },
+              { value: "high", label: "สูง" },
+              { value: "premium", label: "พรีเมียม" },
             ]}
           />
         </Field>
