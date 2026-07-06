@@ -11,9 +11,9 @@ import {
 } from "../lib/format";
 
 /**
- * Mobile-only fixed bottom sheet showing the live summary.
- * Collapsed it takes ~20% of the screen (total + calculate button);
- * tapping the handle expands it to show the full breakdown.
+ * Mobile-only fixed bottom sheet with the live summary.
+ * Collapsed it shows just the total + calculate button; tapping the handle
+ * (chevron) expands the full breakdown, and tapping again tucks it away.
  */
 export function MobileSummaryBar({ onCalculate }: { onCalculate: () => void }) {
   const { state } = useStore();
@@ -30,16 +30,31 @@ export function MobileSummaryBar({ onCalculate }: { onCalculate: () => void }) {
         type="button"
         className="ms-handle"
         aria-expanded={open}
+        aria-label={open ? "ย่อสรุปราคา" : "ดูรายละเอียดสรุปราคา"}
         onClick={() => setOpen((o) => !o)}
       >
         <span className="ms-grip" />
-        <span className="ms-head">
+        <span className="ms-head-left">
           <span className="ms-label">ราคาประเมินรวม</span>
-          <strong className="ms-total">{formatBaht(c.grandTotal)}</strong>
+          <span className="ms-sub">
+            {formatArea(c.gfa)} · {formatNumber(c.roomCount)} ห้อง
+          </span>
         </span>
-        <span className="ms-sub">
-          {formatArea(c.gfa)} · {open ? "ย่อ ▾" : "ดูรายละเอียด ▸"}
-        </span>
+        <strong className="ms-total">{formatBaht(c.grandTotal)}</strong>
+        <svg
+          className="ms-caret"
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m6 15 6-6 6 6" />
+        </svg>
       </button>
 
       <div className="ms-body">
