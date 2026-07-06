@@ -717,6 +717,11 @@ input[type="range"] {
 .scale-mid {
   font-weight: 600;
 }
+.slider-hint {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
 .manual-rate-row {
   display: flex;
   align-items: center;

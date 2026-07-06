@@ -19,17 +19,19 @@ export function PriceRangeSlider({
   compact?: boolean;
 }) {
   const bounds = resolveBounds(rateItem);
-  const clamped = Math.min(bounds.premiumMax, Math.max(bounds.low, value));
+  // Slider stops at the "พิเศษ" (premium) level; higher than this needs manual entry.
+  const premiumLevel = Math.round(bounds.high + (bounds.premiumMax - bounds.high) * 0.4);
+  const clamped = Math.min(premiumLevel, Math.max(bounds.low, value));
   const grade = gradeForRate(manualRate ? value : clamped, bounds);
   const step = 50;
 
   const midPercent =
-    bounds.premiumMax > bounds.low
-      ? ((bounds.mid - bounds.low) / (bounds.premiumMax - bounds.low)) * 100
+    premiumLevel > bounds.low
+      ? ((bounds.mid - bounds.low) / (premiumLevel - bounds.low)) * 100
       : 50;
   const highPercent =
-    bounds.premiumMax > bounds.low
-      ? ((bounds.high - bounds.low) / (bounds.premiumMax - bounds.low)) * 100
+    premiumLevel > bounds.low
+      ? ((bounds.high - bounds.low) / (premiumLevel - bounds.low)) * 100
       : 75;
 
   return (
@@ -71,10 +73,10 @@ export function PriceRangeSlider({
           <input
             type="range"
             min={bounds.low}
-            max={bounds.premiumMax}
+            max={premiumLevel}
             step={step}
             value={clamped}
-            aria-label="เลือกราคาต่อตารางเมตร ตั้งแต่ช่วงอ้างอิงถึงพรีเมียม"
+            aria-label="เลือกราคาต่อตารางเมตร ตั้งแต่ช่วงอ้างอิงถึงระดับพิเศษ"
             onChange={(e) => onChangeRate(Number(e.target.value), false)}
           />
           <span className="mid-marker" style={{ left: `${midPercent}%` }} title="ราคากลางอ้างอิง" />
@@ -83,8 +85,13 @@ export function PriceRangeSlider({
             <span>{formatNumber(bounds.low)}</span>
             <span className="scale-mid">{formatNumber(bounds.mid)}</span>
             <span>{formatNumber(bounds.high)}</span>
-            <span>2x {formatNumber(bounds.premiumMax)}</span>
+            <span>พิเศษ {formatNumber(premiumLevel)}</span>
           </div>
+          {!compact && (
+            <p className="slider-hint">
+              สูงกว่าระดับ “พิเศษ” ({formatNumber(premiumLevel)} บาท/ตร.ม.) กด “ปรับราคาเอง” เพื่อกรอกเอง
+            </p>
+          )}
         </div>
       )}
 
